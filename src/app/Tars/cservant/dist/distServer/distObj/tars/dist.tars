@@ -1,0 +1,88 @@
+module DistServiceServant
+{
+    //通用入参
+    struct CommonInParam {
+        0 require string businessId;  //登录商家id
+        1 require int domainId;    //域名id
+        2 require int storeId;      //店铺id
+    };
+
+    //分销层级
+    struct UpdateParam {
+        1 require string userId;   //要修改的用户id
+        2 require int level;    //等级,1:一级;2:二级
+    };
+
+    //层级升级
+    struct UnbindParam {
+        1 require string userId;   //要解除身份的用户id
+    };
+
+    //列表参数
+    struct QueryParam {
+        1 optional string mobile;   //分销员手机号
+        2 optional string referrerMobile; //邀请人手机号
+        3 optional string startAt; //开始时间
+        4 optional string endAt;   //结束时间
+        5 optional int page;    //分页页数
+        6 optional int pageSize;    //每页数量
+    };
+
+    //同步参数
+    struct SynchronizeParam {
+        0 require string userId;   //用户id
+        1 optional string mobile;    //手机号
+        2 optional string nickname;  //昵称
+    };
+
+    //商家审核分销员\
+
+    struct PendingParam {
+        1 require string userId; //修改的用户id
+        2 require int status; //审核状态，1:审核通过,2:审核不通过
+    };
+
+    //输出参数通用结构体
+    struct CommonOutParam {
+        0 require int code;  //接口返回码
+        1 require string message;  //接口返回提示信息
+    };
+
+    //查询返回列表字段
+    struct Distributor {
+        0 optional string userId;   //分销用户id
+        1 optional string mobile;   //分销手机号
+        2 optional string nickname;  //用户名
+        3 optional int level;    //分销等级d
+        4 optional string createdAt;   //加入时间
+        5 optional string referrerMobile;  //邀请人手机号
+        6 optional int total;    //累计分销数量
+        7 optional string point;    //累计总佣金(积分)
+    };
+
+    //分页数据
+    struct Page {
+        0 require vector<Distributor> list;   //列表数据
+        1 require int page;     //当前页数
+        2 require int total;    //总记录数
+    };
+
+    interface DistService
+    {
+        void pending(CommonInParam inParam, PendingParam param, out CommonOutParam outParam); //审核
+
+        void getPending(CommonInParam inParam, QueryParam param, out CommonOutParam outParam, out Page data);  //获取待审核分销员列表
+
+        void getDistCount(CommonInParam inParam, out CommonOutParam outParam, out int total, out int used);   //获取分销员数量配置
+
+        void updateUserInfo(CommonInParam inParam, SynchronizeParam param, out CommonOutParam outParam);  //同步更新分销员用户信息
+
+        void getApprove(CommonInParam inParam, QueryParam param, out CommonOutParam outParam, out Page data);   //获取审核通过分销员列表
+
+        void updateDist(CommonInParam inParam, UpdateParam param, out CommonOutParam outParam);    //修改等级
+
+        void unbindReferrer(CommonInParam inParam, UnbindParam param, out CommonOutParam outParam);    //解绑推荐人
+
+        void unbindDistributor(CommonInParam inParam, UnbindParam param, out CommonOutParam outParam); //解除身份
+    };
+};

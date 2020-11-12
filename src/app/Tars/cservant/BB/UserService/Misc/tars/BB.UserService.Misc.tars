@@ -1,0 +1,18 @@
+//BB.UserService.Misc obj->servants(interfaces)
+module Misc
+{
+
+    interface Sms
+    {
+        //发送短信
+        //手机号 to, 发送内容 content, tepmlate 模板 data 数据, ip 是ip地址限流， out 返回信息 error
+        int sendSms(string to, string content, string template, map<string,string> data, out string error);
+    };
+
+    interface Test
+    {
+        int testHello(string name, out string greetings);
+    };
+
+};
+

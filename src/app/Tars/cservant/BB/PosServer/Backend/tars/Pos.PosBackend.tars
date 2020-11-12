@@ -1,0 +1,94 @@
+module PosBackendServant
+{
+    //公共出参
+    struct CommonOutParam{
+        0 require int code;
+        1 require string message;
+    };
+
+    //列表公共入参
+    struct CommonInParam{
+        0 require int page=1;
+        1 require int limit=10;
+    };
+
+    //POS机进件列表字段
+    struct PosListFields{
+        0 require int id;
+        1 require string code;
+        2 require string type;
+        3 require string created_at;
+        4 require string status;
+    };
+
+    struct PosList{
+        0 require int page;                             //当前页
+        1 require int total;                            //总数据条数
+        2 require vector<PosListFields> list;           //列表数据
+    };
+
+    struct PosQuery{
+        0 optional string code;
+    };
+
+    struct Pos{
+        0 optional int id;
+        1 require  string type;
+        2 require  string code;
+    };
+
+    struct PosDetail{
+        0 require string type;
+        1 require string code;
+        2 require string created_at;
+        3 require string status;
+    };
+
+    //POS机申请列表字段
+    struct PosApplyListFields{
+        0 require int id;                       //ID
+        1 require string shop_name;             //店铺名称
+        2 require string contact;               //联系人
+        3 require string mobile;                //联系电话
+        4 require string created_at;            //申请时间
+    };
+
+    struct PosApplyList{
+        0 require int page;                             //当前页
+        1 require int total;                            //总数据条数
+        2 require vector<PosApplyListFields> list;   //列表数据
+    };
+
+    struct PosApplyQuery{
+        0 optional int shop_id;
+        1 optional string shop_name;
+        2 optional string start_time;
+        3 optional string end_time;
+    };
+
+    struct BindPos{
+        0 require int platform;
+        1 require int shop_id;
+        2 require string code;
+    };
+
+    interface PosBackend
+    {
+        //POS机进件列表
+        void PosList(PosQuery query, CommonInParam inParam, out PosList list, out CommonOutParam outParam);
+
+        //新增POS机进件
+        void AddPos(Pos pos, out CommonOutParam outParam);
+
+        void PosDetail(int id, out PosDetail pos, out CommonOutParam outParam);
+
+        //邦邦后台POS机申请列表
+        void PosApplyList(PosApplyQuery query, CommonInParam inParam, out PosApplyList list, out CommonOutParam outParam);
+
+        //删除POS机申请
+        void DelPosApply(int id, out CommonOutParam outParam);
+
+        //绑定POS机
+        void BindPos(BindPos inParam, out CommonOutParam outParam);
+    };
+};

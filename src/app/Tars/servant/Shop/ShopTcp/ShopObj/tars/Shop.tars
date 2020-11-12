@@ -1,0 +1,140 @@
+module ShopService
+{
+    // 店铺详情
+    struct ShopInfo{
+           0  optional  int      id;               //商家id
+           1  optional  string   thumb;            //商品主图
+           2  optional  string   name;             //商家名称
+           3  optional  string   type;             //1正式 3试用开店(体验）
+           4  optional  string   phone;            //手机号
+           5  optional  string   uid;              //商家用户的id
+           6  optional  string   expiretime;        //试用期到期时间
+           7  optional  string   pid;               //上级店铺的id
+           8  optional  string   surname;           //商家真实名字
+           9  optional  string   istrial;           //0:没有试用过店铺；1试用过店铺
+           10 optional  string   domain_id;         //域名的id
+           11 optional  string   industry_name;     //域名行业
+           12 optional  string   shoptype;          //店铺类型
+           13 optional  string   merchant_number;   //商户号
+           14 optional   int     code;
+           15 optional  string   message;
+     };
+       //商品列表出参
+        struct ShopList{
+            0 optional  vector<ShopInfo> item;  //商品列表
+            1 optional  int  total;             //总数据
+            2 optional   int  code;
+            3 optional  string  message;
+        };
+       //商家列表入参
+        struct PageParam{
+             0 optional   int     page;           //页数
+             1 optional   int     pageSize;       //每页数据量
+             2 optional   string  idArray;        //店铺id'1,2,3'
+             3 optional   string  search;         //搜索的关键字
+             4 optional   int     store_id;       //店铺id
+        };
+       //更新某条记录中的数据
+        struct resultMsg{
+            0  optional int     code;
+            1  optional string  msg;
+            2  optional string data;
+        };
+        //获取支付商户信息
+        struct outMerchantInfo{
+            0  optional int    id;
+            1  optional int    store_id;
+            2  optional string uid;
+            3  optional string company;
+            4  optional string address;
+            5  optional string phone;
+            6  optional string email;
+            7  optional string license_num;
+            8  optional string license_img;
+            9  optional string province_id;
+            10 optional string city_id;
+            11 optional string district;
+            12 optional string industry_code;
+            13 optional string business_category;
+            14 optional string legal;
+            15 optional string legal_idCard;
+            16 optional string idCard_start;
+            17 optional string idCard_end;
+            18 optional string idCard_front;
+            19 optional string idCard_opposite;
+            20 optional string bank_code;
+            21 optional string status;
+            22 optional string bankname;
+            23 optional string bankcity;
+            24 optional string bankprovince;
+            25 optional string area_id;
+            26 optional string bank_sub_name;
+            27 optional string account_name;
+            28 optional string account_no;
+            29 optional string MCC_code;
+            30 optional string registerId;
+            31 optional string merchant_number;
+        };
+        // 商品详情
+        struct ProductInfo{
+            0 optional  int      id;               //商品id
+            1 optional  string   thumb;            //商品主图
+            2 optional  string   name;             //商品名称
+            3 optional  string   price;            //商品价格
+            4 optional  int      stock;            //商品库存
+            5 optional  string   describe;         //商品描述
+            6 optional  string   unit;             //商品单位
+            9 optional  string   gift_points;     //积分
+            10 optional  string  gift_type;       //赠送方式
+            11 optional  string  store_id;        //积分
+            12 optional  string  p_name;          //店铺名称
+            13 optional  string  deposit;         //定金
+            14 optional  string  product_types;   //商品类型
+            15 optional  string   details;        //商品详情
+        };
+        //商品列表出参
+        struct outProductList{
+            0 optional  vector<ProductInfo> item;  //商品列表
+            1 optional  int  total;                  //总数据
+        };
+        //商家列表入参
+        struct PageParamList{
+             0 optional   int     page;           //页数
+             1 optional   int     pageSize;       //每页数据量
+             2 optional   string  search;         //搜索的关键字
+             3 optional   int     store_id;       //店铺id
+        };
+        interface Shop
+        {
+            //店铺列表
+            void shopList(PageParam Param ,out ShopList List);
+            //店铺详情
+            void shopInfo(int id,out ShopInfo info);
+            //通过uuid判断店铺是否存在
+            void shopExis(string uuid,out resultMsg data);
+            //获取店铺域名domain_id
+            void shopDomainId(int shop_id,out resultMsg data);
+            //获取店铺域名appid
+            void shopGetAppid(string domain,out resultMsg data);
+            //通过uuid获取店铺信息
+            void getUuidShop(string uuid,string name,int demain_id,out ShopInfo ShopInfo);
+            //判断该店铺是否属于他的店铺
+            void isMyShop(string uuid,int shop_id,out resultMsg data);
+            //通过店铺名称搜索获取一个店铺id数组
+            void getShopId(string paramName,out resultMsg data,out vector<int> outGetArrayId);
+            //更新数据统计表某条记录中的数据 store_id 店铺id type 1  订单数量 type 2  销量总是  3 访客数  4 售后订单  updated更新的数量
+            void statisticsUpdated(int store_id,int type, int updated,out resultMsg data);
+            //通过父级的id获取全部子店铺
+            void getSubShop(int pid,out resultMsg data,out vector<int> outGetArrayId);
+            //获取某个平台的下面的
+            void  getDomainList(int domain_id,out resultMsg data,out ShopList List);
+            //获取商户信息
+            void getMerchantInfo(int store_id,out resultMsg data,out outMerchantInfo Merchant);
+            //获取店铺的产品
+            void getShopProduct(PageParamList Param,out resultMsg data,out outProductList ProductList);
+            //通过uuid获取该用户的店 type等于1获取所有店铺（单店，多店铺 子店铺）等于2（单店铺，多店铺）等于3（单店），等于4（连锁店铺）
+            void getUuidShopList(int type,string uuid,out resultMsg data,out ShopList List);
+            //通过商户号获取店铺信息
+            void getMerchantIdShopInfo(string MerchantId,out resultMsg data,out ShopInfo info);
+        };
+};

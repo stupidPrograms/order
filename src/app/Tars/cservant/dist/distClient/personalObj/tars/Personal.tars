@@ -1,0 +1,111 @@
+module Personalserviceservant
+{
+
+    //入参 我的信息
+    struct inputMyCenter{
+        0   require       string      userId;           //用户id
+        1   require       int         domainId;         //平台id
+    };
+
+    //出参 我的信息
+    struct outMyCenter{
+        0   optional      string      nickname;        //用户名     
+        1   optional      string      headImgUrl;      //用户头像
+    };
+
+    //出参 个人中心
+    struct  outMyInfo{
+        0   require       int         todayIntegral;    //今日积分
+        1   require       int         todayTranCount;   //今日分销量
+        2   require       int         tranCount;        //累计分销量
+        3   require       int         amountCount;      //累计分销佣金   
+    };  
+    
+    //入参 分销记录
+    struct  inputRecords{
+        0   require       string      userId;           //用户id
+        1   require       int         domainId;         //平台id
+        2   optional      int         today;            //今日记录
+        3   optional      int         Yesterday;        //昨天记录
+        4   optional      int         SevenDaysAgo;     //七天前记录
+        5   optional      int         ThirtyDaysAgo;    //30天前记录
+        6   optional      int         page;             //分页页数  
+        7   optional      int         pageSize;         //每页数据量   
+    };
+    //分销商品列表
+    struct productList{
+        0   optional      int         id;               //商品id 
+        1   optional      string      name;             //商品名称
+        2   optional      string      thumb;            //商品缩略图
+        3   optional      int         price;            //价格
+        4   optional      int         integral;         //收益积分
+        5   optional      string      finishedAt;       //分销完成时间
+        6   optional      string      distributor;      //分销人
+    };
+    //出参 分销记录
+    struct  outRecords{
+        0   require       int                 tranCount;        //累计分销量
+        1   require       int                 amountCount;      //累计分销佣金(积分)
+        2   optional      vector<productList> data;             //列表数据
+        3   optional      int                 page;             //当前页数
+        4   optional      int                 total;            //总记录数
+    };
+
+    //入参 商家列表
+    struct inputBusiness{
+        0   optional      string            shopName;
+        1   optional      int               pageSize;
+        2   optional      int               page;
+    };
+
+    //商家列表详情
+    struct business{
+        0   optional      string      businessId;             //商家id 
+        1   optional      int         domainId;               //平台id
+        2   optional      string      name;                   //商品店铺名称
+        3   optional      string      thumb;                  //商品店铺缩logo
+        4   optional      int         tranCount;              //累计分销量
+        5   optional      int         amountCount;            //累计分销佣金
+        6   optional      int         level;                  //分销等级
+    };
+
+    //出参 商家列表
+    struct outBusiness{
+        0   optional      vector<business>    data;           //列表数据
+        1   optional      int                 page;           //当前页数
+        2   optional      int                 total;          //总记录数
+    };
+
+    //解除分销关系
+    struct  inputRelieve{
+        0   require       string      userId;                 //用户id
+        1   require       string      businessId;             //商家id
+        2   require       int         domainId;               //平台id
+
+    };
+	//出参 参数通用结构体
+    struct CommonOutParam {
+        0   require       int         code;                   //接口返回码
+        1   require       string      message;                //接口返回提示信息
+    };
+
+    interface PersonalService
+    {
+        //个人信息
+        void mySelfCenter(inputMyCenter input,out CommonOutParam outParam,out outMyCenter MyCenter);
+
+        //个人中心
+        void  mySelfInfo(inputMyCenter input,out CommonOutParam outParam,out outMyInfo MyInfo);
+        
+        //分销记录查看
+        void mySelfRecords(inputRecords record,out CommonOutParam outParam,out outRecords Records);
+
+        //商家列表
+        void businessList(inputMyCenter input,inputBusiness busi,out CommonOutParam outParam,out outBusiness Business);
+
+        //解除分销关系
+        void disengagement(inputRelieve relieve,out CommonOutParam outParam);
+
+        void test(inputMyCenter input,out CommonOutParam outParam);
+    };
+};

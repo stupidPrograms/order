@@ -1,0 +1,112 @@
+module IntegralService
+{
+
+  struct inParam
+  {
+    0 require string platform_id;  //平台id
+    1 require  string merchant_id;  //商家id
+  };
+
+
+   struct registerAccountParam
+   {
+    0 require string platform_id;
+    1 require string merchant_id;
+   };
+
+  struct outParam
+  {
+    0 require int code; //状态码
+    1 require string message;  //提示信息
+
+  };
+
+
+   struct merchantAddSalesmanParam
+   {
+      0 require string merchant_uuid; //商家唯一标识
+      1 require string shop_id; //店铺id
+      2 require int consum_type; //1 充值 2消费
+      3 require string integral_num;//积分数量
+   };
+
+   struct specialFrozenIntegralParam
+   {
+      0 require string title; //标题描述
+      1 require string merchant_id; //商家id
+      2 optional string user_id; //用户id
+      3 optional string user_phone; //用户手机号
+      4 require int frozen_type; //0 创建传播  1创建分
+      5 require int frozen_integral_total; //专项冻结总积分
+      6 require string integral_task_id; //其他业务冻结单号
+      7 optional int end_time; //结束时间
+      8 require int platform_id;  //平台id
+   };
+
+
+    //返回商家积分
+    struct inReturnIntegral
+    {
+        0 require string integral_task_id;   //其他系统提现业务单号
+        1 require int merchant_id;   //商家id
+        2 require int platform_id;   //平台id
+    };
+
+
+    //更改专项任务积分进参
+    struct changeIntegralIn
+    {
+        0 require int merchant_id;  //商家id
+        1 require int platform_id;  //平台id
+        2 require string integral_task_id;  //其他业务冻结单号
+        3 require int frozen_integral_total; //专项冻结总积分
+        4 optional string user_id; //用户id
+        5 optional string user_phone; //用户手机号
+    };
+
+
+    //删除专项任务进参
+    struct delIntegralTaskIn
+    {
+        0 require int merchant_id;  //商家id
+        1 require int platform_id;  //平台id
+        2 require string integral_task_id;  //其他业务冻结单号
+        3 require int type;   //是否返还商家积分  1返还  2不返还
+    };
+
+    //任务预扣积分 认领任务 扣除专项冻结积分
+    struct integralHoldIn
+    {
+        0 require string integral_task_id; //专项任务id
+        1 require string uuid; //用户唯一标识
+        2 require string merchant_id;  //商户id
+        3 require string shop_id;  //店铺id
+        4 require int reduce_integral; //减去积分值
+        5 require string user_phone; //商户手机号
+        6 require int status; //是否实时积分到账  1默认 实时到账 0非实时
+        7 optional string title;  //标题
+
+    };
+
+
+    interface Integral
+    {
+        void merchantAddSalesman(merchantAddSalesmanParam in, out outParam out);//商户积分扩充分销员
+
+        void specialFrozenIntegral(specialFrozenIntegralParam in, out outParam out);//专项任务预扣积分
+
+        //退还商家积分
+        void returnIntegral(inReturnIntegral in, out outParam out);
+
+        //更改专项任务积分
+        void changeIntegral(changeIntegralIn in, out outParam out);
+
+        //删除专项任务
+        void delIntegralTask(delIntegralTaskIn in, out outParam out);
+
+        //任务预扣积分 认领任务 扣除专项冻结积分
+        void integralHold(integralHoldIn in,out outParam out);
+    };
+
+
+};

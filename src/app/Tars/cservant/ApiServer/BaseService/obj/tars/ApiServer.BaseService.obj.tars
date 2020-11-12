@@ -1,0 +1,12 @@
+module BaseServiceServant
+{
+    interface BaseService
+    {
+        //一键注册API网关接口,一键把微服务的API接口注册到网关系统中,其中hostname和port是指微服务子系统的IP(或域名)和端口,service_path是指API原请求路径,route_paths是指最终注册到网关中的API访问路径;返回201代表成功,否则失败
+        int api_register(string upstream_name, string hostname, int port, string service_name, string service_path, string route_paths);
+
+        //添加consumer消费者即网关用户,暂定为会员注册手机号码;返回201代表成功,否则失败
+        int api_add_consumer(string consumer_name);
+
+    };
+};

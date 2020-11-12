@@ -1,0 +1,46 @@
+module OperationCenter{
+
+    struct Pagination
+    {
+        0 require int page; //页数入参
+        1 require int perPage; //每页数量入参
+        2 optional int count; //总条数
+    };
+
+
+    struct Platform
+    {
+        0 require string domain;//域名全称,例如www.example.com
+        1 require int envDomainId;
+        2 require bool primary;//是否主域
+        3 require string name; //平台名称
+    };
+
+    struct PlatformQuery
+    {
+        0 require string domain;//域名全称,例如www.example.com
+        1 require int envDomainId;
+        2 require bool primary;//是否主域
+        3 require string name; //平台名称
+        4 optional Pagination pagination; // 分页
+    };
+
+    interface Operation{
+        //取得域名对应平台信息
+        int getPlatformByDomain(string domain, out Platform pf, out string err);
+        //取得所有平台信息
+        int getPlatformListByQuery(PlatformQuery query, out vector<Platform> list, out string err);
+        //增加域名,如果增加主域，则不需要填envDomainId
+        int addDomainToPlatform(Platform pf, out Platform newPf, out string err);
+        //删除域名(若删除主域，则次域也一并软删除，慎重)
+        int removeDomain(string domain, out string err);
+        //检测管理权限,通过返回true,不通过返回false
+        //token: X-Api-Token头
+        //path: api路径
+        //action: GET,POST,DELETE,PUT
+        //params: json格式的参数，用来做后台日志,例如：json_encode(array_merge($request->all(),['ip'=>$request->GetIp()]))，或者你觉得重要的参数
+        bool CheckAdminPermission(string token, string path, string action, string params, out string err);
+        //获取token对应的用户名和角色
+        void GetAdminInfo(string token, out string account, out vector<string> roles);
+    };
+};

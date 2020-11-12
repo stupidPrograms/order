@@ -1,0 +1,201 @@
+module CouponService
+{
+    //通用进参
+    struct  publicInParam
+    {
+        0 require int coupon_id;   //优惠券id
+    };
+
+    //通用错误信息提示
+    struct publicErrorTips
+    {
+        0 require int code;  //错误码
+        1 require string message;  //错误信息
+    };
+
+    //优惠券详情信息
+    struct couponInfo
+    {
+        0 require int coupon_id;
+        1 require string platform_id;  //平台id
+        2 require string merchant_id;  //商家id
+        3 require string coupon_title;  //优惠券标题名称
+        4 require string coupon_title_sub;  //优惠券子标题
+        5 require string coupon_tid;  //优惠券种类
+        6 require int limit_amount;   //最低门槛使用金额
+        7 require int discount_amount; //使用优惠券后的应付金额
+        8 require int save_amount;  //参与优惠后节省的金额
+        9 require string coupon_desc;  //优惠券描述
+        10 require int use_scenario;  //适用场景 0 满场通用 1指定商品 2指定商品分类
+        11 require string use_desc;  //使用说明
+        12 require int use_limit;   //每人限制使用
+        13 require int total_num;   //总计发放数量
+        14 require int recipients_num;  //领用数量
+        15 require int number_of_recipients;  //领用人数
+        16 require int add_user_id;  //添加人用户id 用于记录发放人
+        17 require int start_time;  //优惠券可使用开始时间
+        18 require int end_time;   //使用结束时间
+        19 require int status;   //优惠券状态  1正常使用 2已失效
+        20 require int deposit_price;  //定金券价格
+    };
+
+
+    struct singleCouponInfo
+    {
+        0 require vector<couponInfo> coupon_info;   //优惠券详细信息
+        1 require int code;
+    };
+
+
+    //传递商品id
+    struct inProductId
+    {
+        0 require int product_id;    //商品id
+    };
+
+
+    //返回商品可用优惠券数据
+    struct availableCouponInfo
+    {
+        0 require vector<couponInfo> coupon_info;   //优惠券详细信息
+        1 require int page;  //第几页
+        2 require int rows;  //每页条数
+        3 require int total;   //总记录数
+        4 require int code;
+    };
+
+    //下单记录优惠券详情
+    struct couponDefail
+    {
+        0 require string coupon_name;   //优惠券名称
+        1 require int amount;   //折扣数值   除了折扣券，其他券种值为0
+        2 require int coupon_type;   //优惠券类型
+        3 require string reduction_money;   //减免的金额
+        4 require string content;   //备注内容
+        5 require string start_time;   //优惠券有效开始时间
+        6 require string end_time;  //优惠券有效结束时间
+        7 require int domain_id;   //1邦邦系统，2帮部落
+        8 require int status;   //使用状态：1正常使用 2已失效
+    };
+
+
+
+    //下单请求优惠券(进参)
+    struct orderCouponIn
+    {
+        0 require string order_sn;   //订单号
+        1 require int coupon_id;   //优惠券id
+        2 require float money;     //下单金额
+        3 require string mobile;   //用户手机号
+        4 require string name;   //用户名称
+        5 require int goods_id;   //商品id
+        6 require int shop_id;   //店铺id
+    };
+
+    //下单请求优惠券(出参)
+    struct orderCouponOut
+    {
+        0 require int code;   //状态码
+        1 require string message;   //返回信息
+        2 require vector<couponDefail> coupon_info;   //优惠券详细信息
+    };
+
+
+    //商品可用优惠券数量
+    struct couponNumber
+    {
+        0 require int number;   //可用优惠券数量
+    };
+
+
+    //定金券购买成功时，回调通知进参
+    struct payCouponNotifyIn
+    {
+        0 require string order_sn;   //订单号
+        1 require int coupon_id;    //优惠券id
+        2 require int pay_money;    //实际支付价格
+    };
+
+
+    //通用出参
+    struct outParam
+    {
+        0 require int code;   //状态码
+        1 require string message;   //提示信息
+    };
+
+    //购买定金券进参
+    struct buyCouponIn
+    {
+        0 require string order_sn;   //订单号
+        1 require int coupon_id;   //优惠券id
+        2 require int user_id;   //购买人id
+        3 require string mobile;   //购买人手机号
+        4 require int number;   //购买数量
+        5 require int pre_pay_price;   //预支付价格
+    };
+
+
+    //优惠券已使用(进参)
+    struct couponUsedIn
+    {
+        0 require string order_sn;   //订单号
+        1 require int coupon_id;   //优惠券id
+        2 require int goods_id;    //商品id
+        3 require string goods_name;    //商品名称
+        4 require int user_id;   //用户id
+        5 require string user_name;   //用户名
+        6 require string user_phone;   //用户手机号
+    };
+
+
+    //更新订单id和用户uuid进参
+    struct updateOrderIdIn
+    {
+        0 require string order_sn;  //订单号
+        1 require int order_id;   //订单id
+        2 require string uuid;   //用户的uuid
+    };
+
+
+    //更改优惠券的使用状态
+    struct changeCouponStateIn
+    {
+        0 require string order_sn;     //订单号
+        1 require string state;     //状态   0等待锁定(默认)  1付款中   2已付款   3订单取消
+    };
+
+
+    interface Coupon
+    {
+        //返回优惠券详情
+        void couponInfo(int coupon_id, out publicErrorTips error_tips, out singleCouponInfo coupon_info);
+
+        //返回商品可用优惠券数据
+        void availableCouponInfo(inProductId product_id, out publicErrorTips error_tips, out availableCouponInfo coupon_list);
+
+        //下单时返回优惠券详情
+        void orderCouponInfo(orderCouponIn inParam, out orderCouponOut outParam);
+
+        //获取商品的可用优惠券数量
+        void couponNumber(inProductId product_id, out publicErrorTips error_tips, out couponNumber coupon_number);
+
+        //购买定金券时这边做一个预购买数据记录
+        void buyCouponDataRecord(buyCouponIn in, out outParam out);
+
+        //定金券购买成功时，下单的回调通知
+        void buyCouponNotify(payCouponNotifyIn in, out outParam out);
+
+        //商品下单使用优惠券，付款成功时，通知我这边更改优惠券的状态为已使用状态
+        void couponUsedChangeState(couponUsedIn in, out outParam out);
+
+        //根据订单号更新订单id和用户uuid
+        void updateOrderId(updateOrderIdIn in, out outParam out);
+
+        //更改优惠券的使用状态
+        void changeCouponState(changeCouponStateIn in, out outParam out);
+    };
+
+
+
+};

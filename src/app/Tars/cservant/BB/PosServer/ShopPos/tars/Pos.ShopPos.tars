@@ -1,0 +1,113 @@
+module ShopPosServant{
+
+    //通用进参
+    struct CommonInParam{
+        0 require int shop_id;
+    };
+
+    //通用出参
+    struct CommonOutParam{
+        0 require int code;
+        1 require string message;
+    };
+
+    struct ListInParam{
+        0 require int page=1;  //跳转页
+        1 optional int limit=10;   //每页数据数，默认10条
+    };
+
+    struct PosListFields{
+        0 require int id;
+        1 require string code;
+        2 require string type;
+        3 require string shop_name;
+        4 require string created_at;
+        5 require string price;
+        6 require string card;
+    };
+
+    struct PosList{
+        0 require int total;
+        1 require int page;
+        2 require vector<PosListFields> list;
+    };
+
+    struct PosListQuery{
+        0 optional string code;
+    };
+
+    struct PosApplications{
+        0 require int shop_id;
+        1 require string mobile;
+        2 require string contact;
+        3 require string address;
+    };
+
+    struct TradeLogList{
+        0 require int id;
+        1 require string time;
+        2 require string type;
+        3 require string price;
+        4 require int status;
+        5 require string address;
+    };
+
+    struct PosClerksListQuery{
+        0 optional string nickname;
+        1 optional string start_time;
+        2 optional string end_time;
+        3 require  int pos_id;
+    };
+
+    struct PosClerks{
+        0 require int id;
+        1 require string code;
+        2 require string nickname;
+        3 require string created_at;
+        4 require string remark;
+    };
+
+    struct ClerksList{
+        0 require int page;                             //当前页
+        1 require int total;                            //总数据条数
+        2 require vector<PosClerks> list;   //列表数据
+    };
+
+    struct AddClerk{
+        0 require int pos_id;
+        1 require string uuid;
+        2 require string nickname;
+        3 require string headimgurl;
+        4 require string code;
+    };
+
+    struct ClerksCheck{
+        0 require int pos_id;
+        1 require string uuid;
+    };
+
+    interface ShopPos{
+        //商家POS列表
+        void PosList(PosListQuery query,CommonInParam inParam,ListInParam param,out PosList list,out CommonOutParam outParam);
+
+        void PosApply(PosApplications inParam,out CommonOutParam outParam);
+
+        void ClerksList(PosClerksListQuery query,CommonInParam inParam, ListInParam param, out ClerksList list,out CommonOutParam outParam);
+
+        void AddClerks(AddClerk clerk,out CommonOutParam outParam);
+
+        void EditRemark(int id, string remark,out CommonOutParam outParam);
+
+        void DelClerks(int id,out CommonOutParam outParam);
+
+        void IsConfirm(int posId,out AddClerk cl);
+
+        void Confirm(ClerksCheck clerk,out CommonOutParam outParam);
+
+        bool isPosUser(string uuid, string code, out CommonOutParam data);
+        //同步店铺名
+        void updateShopName(int id,string name, out CommonOutParam data);
+
+        void test( out CommonOutParam data);
+    };
+};

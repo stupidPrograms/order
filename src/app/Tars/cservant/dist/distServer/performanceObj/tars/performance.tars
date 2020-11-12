@@ -1,0 +1,169 @@
+module PerformanceServiceServant
+{
+    //通用入参结构体
+    struct CommonInParam {
+        0 require string businessId; //登录商家id
+        1 require int domainId;    //域名id
+        2 require int storeId;    //店铺id
+    };
+
+    //分销记录列表参数
+    struct QueryParam {
+        0 optional long mobile;     //搜索的手机号
+        1 optional int type;        //分销类型，1:商品分销,2:抵用券分销
+        2 optional string startAt;    //分销开始时间
+        3 optional string endAt;      //分销结束时间
+        4 optional int status;      //结算状态，0无状态，1分销成功，2分销失败，3待结算，4已结算
+        5 optional int page;        //页数
+        6 optional int pageSize;    //每页数量
+    };
+
+    //分销记录列表
+    struct Record {
+        0 require long mobile;      //手机号
+        1 require string nickname;  //昵称
+        2 require string createdAt;   //分销时间
+        3 require int type;         //类型，1:商品分销,2:抵用券分销
+        4 require string point;        //可获佣金(积分)
+        5 require int status;       //结算状态，0无状态，1分销成功，2分销失败，3待结算，4已结算
+        6 require int tran_id;      //交易id
+        7 optional int id;           //分销记录表id
+    };
+
+    //分页数据
+    struct Page {
+        0 require vector<Record> list;   //列表数据
+        1 require int page;     //当前页数
+        2 require int total;    //总记录数
+    };
+
+    //结算积分参数
+    struct SettleParam {
+        0 require int tran_id;     //交易id
+        1 optional int id;          //分销记录表id
+    };
+
+    //分销详情
+    struct Good {
+        0 require string distName;     //分销员名称
+        1 require long distMobile;     //分销员手机号
+        2 require int distLevel;       //分销员等级
+        3 require string custerName;   //顾客名称
+        4 require int distType;        //分销类型,1:商品分销,2:抵用券分销
+        5 require int status;           //订单状态
+        6 require string cover;         //商品图
+        7 require string title;         //商品标题
+        8 require string price;            //商品价格
+        9 require string currency;      //货币类型,如￥
+        10 require string createdAt;     //分销时间
+        11 require int perType;        //佣金来源,1:商品分销,2:抵用券分销
+        12 require int perStatus;      //结算状态
+        13 require string perPoint;       //结算积分
+        14 require long custerMobile;   //顾客手机号
+    };
+
+    //记录分销参数
+    struct RecordParam {
+        0 require int tranId;   //交易id
+        1 require string order_sn;   //交易订单号
+        2 require string amount;   //订单金额
+        3 require string rate;     //当前积分通兑比例
+        4 require int domainId; //平台商id
+        5 require string code;  //分销码
+        6 require string uuid;  //商家id
+        7 require int storeId;  //店铺id
+        8 require int  count;    //商品数量
+        9 optional int pay_online;    //线上交易的总金额
+
+    };
+
+    //更新分销状态
+    struct UpdateParam {
+        0 require int       tranId;   //交易id
+        1 require int       status;   //分销状态
+        2 require string    businessId;   //商家id
+        3 require int       points;   //商家id
+    };
+
+    //日统计参数
+    struct DailyParam {
+        0 require string startAt; //开始时间
+        1 require string endAt;   //结束时间
+    };
+
+    //周统计
+    struct Week {
+        0 require int sales;            //周销售额
+        1 require int salePercent;      //周对比
+        2 require int orders;           //订单数
+        3 require int orderPercent;     //周对比
+        4 require int success;          //分销成功率
+        5 require int successPercent;   //周对比
+        6 require int used;             //分销抵扣券
+        7 require int usedPercent;      //周对比
+    };
+
+    //日统计列表
+    struct Daily {
+        0 require int amount;   //总金额
+        1 require int count;    //订单数
+        2 require string date;    //日期
+    };
+
+    //分销员发放佣金
+    struct distInteger {
+        0 require   int         store_id;
+        1 optional  string      one_dist;    //一级分销员
+        2 require   string      two_dist;    //二级分销员
+        3 require   float       one_integer; //一级分销员发放佣金数
+        4 optional  float       two_integer; //二级分销员发放佣金数
+        5 require   int         domainId;
+        6 require   string      task_code;   //任务码
+
+    };
+
+    //一次性消费金额
+    struct inputUpgrade{
+        0 require string uuid;              //用户uuid
+        1 require int store_id;             //店铺id
+        2 require int domainId;
+        3 require int money;                //消费金额
+    };
+
+    struct amounts{
+        0 optional int point;
+        1 optional int id;
+        2 optional string uuid;
+    };
+
+    //输出参数通用结构体
+    struct CommonOutParam {
+        0 require int code;  //接口返回码
+        1 require string message;  //接口返回提示信息
+    };
+
+    interface PerformanceService
+    {
+        void getRecord(CommonInParam inParam, QueryParam param, out CommonOutParam outParam, out Page page);   //分销记录列表
+
+        void settlePoint(CommonInParam inParam, SettleParam param, out CommonOutParam outParam); //结算积分
+
+        void getDetail(CommonInParam inParam, SettleParam param, out CommonOutParam outParam, out Good data);   //商品详情
+
+        void record(RecordParam param, out distInteger  distIn,out CommonOutParam outParam);  //记录分销记录
+
+        void updateRecord(UpdateParam param, out CommonOutParam outParam);  //更新分销记录状态,并尝试进行结算
+
+        void weekStatistics(CommonInParam inParam, out CommonOutParam outParam, out Week data);  //周统计
+
+        void dailyStatistics(CommonInParam inParam, DailyParam param, out CommonOutParam outParam, out vector<Daily> list);     //日统计
+
+        void getUnsettle(CommonInParam param, out CommonOutParam outParam, out int point);  //获取未结算佣金
+
+        void checkUpgrade(inputUpgrade upgrade, out CommonOutParam outParam);    //一次性消费到指定金额晋级
+
+        void editStatus(int tran_id, out CommonOutParam outParam);   //修改分销记录的积分结算状态
+
+        void getAmount(int tran_id,out CommonOutParam outParam,out vector <amounts> amount);  //返回当前订单的佣金
+    };
+};

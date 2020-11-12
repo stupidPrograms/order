@@ -1,0 +1,114 @@
+module distributorserviceservant
+{
+
+    //输入 用户的分销员申请
+    struct distributors{
+        0   require     string       userId;               //用户id
+        1   optional    string          InviterId;            //邀请人id
+        2   require     string       businessId;           //商家id
+        3   require     int          domainId;             //平台id
+        4   optional    string       code;                 //分享码 
+    };
+    
+    //输入 用户基本信息
+    struct myInfo{
+        0   require     string       userId;               //用户id
+        1   require     string       businessId;           //商家id
+        2   require     int          domainId;             //平台id
+    };
+    //出参 好友邀请码
+    struct friendQrCode{
+        0   optional    string       distId;             //分销员id
+        1   optional    string       code;               //分享码
+        2   optional    string       businessId;         //商家id
+    };
+    //输出 店铺信息
+    struct  outShopData{
+        0   optional    string      Id;                 //商家id 
+        1   optional    string      logo;               //商家logo
+        2   optional    string      name;               //商家名字
+    };
+    //输入 当前商家商品列表
+    struct commodity{
+        0   require       string      userId;           //用户id
+        1   require       string      businessId;       //商家id
+        2   require       int         domainId;         //平台id
+        3   optional      string      search;           //搜索输入
+        4   optional      string      distCount;        //销量
+        5   optional      string      price;            //佣金比例
+        6   optional      int         page;             //分页页数  
+        7   optional      int         pageSize;         //每页数据量
+    };
+    //分销商品数据
+    struct productList{
+        0   optional    int             id;             //商品id 
+        1   optional    string          name;           //商品名称
+        2   optional    string          thumb;          //商品缩略图
+        3   optional    string          rate;           //分销佣金比例
+        4   optional    int             price;          //价格
+        5   optional    int             distCount;      //分销量
+        6   optional    string          distId;         //分销员id
+        7   optional    int             type;           //分销类型 1商品分销|2抵用券分销
+        8   optional    string          describe;       //商品详情信息
+    };
+    //输出 分销商品数据列表
+    struct productLists{
+        0   optional    vector<productList> data;       //列表数据
+        1   optional    int page;                       //当前页数
+        2   optional    int total;                      //总记录数
+    };
+    //输入 商品详情
+    struct goodOne{
+        0   require       string      userId;           //用户id
+        1   require       string      businessId;       //商家id
+        2   require       int         goodId;           //商品id    
+        3   require       int         domainId;         //平台id
+    };
+    //出参 分销商品分享码
+    struct  inputQrCode{
+        0   optional    int         goodId;            //商品id    
+        1   optional    int         domainId;          //平台id
+        2   optional    string      businessId;        //商家id
+        3   optional    string      distId;            //分销员id
+        4   optional    string      code;              //分享码
+        5   optional    int         type;              //分销类型 1商品分销|2抵用券分销     
+    };
+    //输出 参数通用结构体
+    struct CommonOutParam {
+        0   require     int         code;              //接口返回码
+        1   require     string      message;           //接口返回提示信息
+    };
+
+    interface distributorService
+    {
+        //分销员申请 
+        void applyDistributor(distributors dist, out CommonOutParam outParam);
+
+        //拒绝后重新申请分销员
+        void repeatApplyDist(myInfo my, out CommonOutParam outParam);
+
+        //验证手机号
+        void checkMobile(string mobile,int domainId,out CommonOutParam outParam);
+
+        //查看审核用户状态
+        void checkDist(myInfo Info,out CommonOutParam outParam);
+
+        //好友邀请码
+        void friendQrCode(myInfo Info,out CommonOutParam outParam,out friendQrCode friend);
+  
+        //店铺信息
+        void shopInfo(string businessId,string domainId,out CommonOutParam outParam,out outShopData ShopData);
+
+        //获取当前商家的商品列
+        void getCommodity(commodity comm,out CommonOutParam outParam, out productLists list);
+
+        //获取商品详情
+        void commodityDetails(goodOne good,out CommonOutParam outParam,out productList produc);
+
+        //分销商品分享码
+        void QrCode(goodOne good, out CommonOutParam outParam,out inputQrCode QrCode);
+
+        //demo
+        void demo(goodOne good, out CommonOutParam outParam,out productList product);
+    };
+};

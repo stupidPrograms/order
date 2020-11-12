@@ -1,0 +1,304 @@
+module PAY
+{
+    struct InUnify {
+        0   require     int         amount;         //金额
+        1   require     string      mark;           //操作识别,可使用的识别为 buyProduct 购买产品;scannedBuyIntegral 积分充值;appBuyIntegral app支付补充积分;posPay pos机支付;overageWithdraw 余额提现;integralWithdraw 积分提现
+        2   require     string      remark;         //支付展示说明,如:购买产品xxx
+        3   optional    string      uuid;           //用户uuid
+        4   optional    string      state;          //用于回调返回
+        5   optional    string      openid;         //用户支付openid 识别为buyProduct时必填
+        6   optional    string      validat;        //有效期，格式：2019-01-01 00:00:00
+        7   optional    string      merchantNo;     //子商户号(当mark为buyProduct时必填)
+        8   optional    int         type=1;         //交易类型：0-提现，1-订单，2-充值
+        9   optional    string      orderSn;        //订单号
+        10  optional    string      storeId;        //店铺
+        11  optional    int         doMainId;       //域id
+    };
+
+    struct OutUnify {
+        //支付订单号
+        0   optional    string      ordersn;
+    };
+
+    struct Status {
+        0   require     int         err=0;//err不等于0为失败
+        1   optional    string      msg;
+        2   optional    string      code;
+    };
+
+    struct orderSearch {
+        0   require     string      field;     //筛选字段 可以筛选的字段：交易时间-finished_at; 创建时间-created_at; mark-支付标识; type-交易类型：0-提现,1-订单,2-充值; 子商户号-mchid;
+        1   require     string      condition; //筛选条件 <, >, =, <=, >=
+        2   require     string      value;     //值
+    };
+
+    struct InOrderPage {
+        0   require     int                     page=1;
+        1   require     int                     rows=10;
+        2   optional    vector<orderSearch>     search;
+    };
+
+    struct PayInfo {
+        0       optional            string          uuid;                   //发起支付的uuid
+        1       optional            string          order_id;               //支付订单id
+        2       optional            string          out_order_id;           //第三方订单id
+        3       optional            string          mark;                   //操作标识
+        4       optional            int             amount;                 //支付金额：单位分
+        5       optional            int             status;                 //支付状态
+        6       optional            int             env_domain_id;          //平台商id
+        7       optional            string          finished_at;            //交易完成时间
+        8       optional            string          created_at;             //发起支付时间
+        9       optional            string          remark;                 //订单备注
+        10      optional            string          openid;                 //积分提现到账openid
+        11      optional            string          order_sn;               //订单系统订单号
+    };
+
+    struct OutOrderPage {
+        0       require             int             total;
+        1       optional            vector<PayInfo> items;
+    };
+
+    struct InWithdraw{
+        0       require             string          openid;
+        1       require             int             amount;
+        2       optional            string          uuid;               //用户id商家id二选一
+        3       optional            int             shop_id;
+    };
+
+    struct InDeviceTerminal{
+        0       require             string          customerNumber;     //子商户号
+        1       require             string          termNo;             //设备号
+    };
+
+    struct InSWIPE{
+        0       require             string          merchantNo;         //子商户号
+        1       require             string          authCode;           //授权码扫支付码获得
+        2       require             int             amount;             //金额,单位：元
+        3       optional            string          notifyUrl;          //异步回调地址
+        4       require             int             storeId;            //店铺id
+    };
+
+    struct InRefund{
+        0       require             string          merchantNo;         //子商户号
+        1       require             string          orderId;            //订单号
+        2       require             int             amount;             //金额,单位：分
+        3       optional            string          notifyUrl;          //异步回调地址
+    };
+
+    struct InPayQuery{
+          0     require             string          merchantNo;         //子商户号
+          1     require             string          orderId;            //订单号
+    };
+
+    struct InOverageWithdraw{
+        0       require             int             amount;             //提现金额，单位：分
+        1       require             string          merchantNo;         //子商户号
+    };
+
+    struct OutMechantOverage{
+        0       require             int             balance;            //可用余额，单位：分
+        1       require             int             frozenBalance;      //待结算余额，单位：分
+    };
+
+    struct InMechantRegister{
+        0       require             string          signName;               //签约名、公司名
+        1       require             string          regionCode;             //区县编码
+        2       require             string          address;                //通讯地址
+        3       require             string          linkName;               //联系人
+        4       require             string          phone;                  //联系电话
+        5       require             string          email;                  //联系邮箱
+        6       require             string          accountIdCard;          //开户人身份证
+        7       require             string          idCardStartDate;        //开户人身份证有效期开始时间,格式YYYYMMDD
+        8       require             string          idCardEndDate;          //开户人身份证有效期结束时间,格式YYYYMMDD
+        9       require             string          bankCode;               //结算卡联行号
+        10      require             string          accountName;            //开户名
+        11      require             string          accountNo;              //开户账号
+        12      require             string          industryTypeCode;       //行业类型编码
+        13      require             string          businessLicense;        //营业执照号
+        14      require             int             MCC;                    //MCC码
+        15      require             string          merchantCategory;       //经营类别
+        16      require             string          busLiceStartDate;       //营业执照有效期开始，格式：20201212
+        17      require             string          busLiceEndDate;         //营业执照有效期结束，格式：20201212/长期有效
+    };
+
+    struct inUploadImgUrl {
+        0       require             string          mechantNo;
+        1       require             string          frontUrl;               //身份证正面图片路径
+        2       require             string          backUrl;                //身份证反面图片路径
+        3       require             string          businessLicense;        //营业执照
+        4       require             string          bankCard;               //结算卡
+        5       require             string          permitForBankAccount;   //开户许可证
+        6       require             string          checkoutCounter;        //收银台照
+        7       require             string          interiorPhoto;          //内景照
+        8       require             string          signBoard;              //门头照
+    };
+
+    //云闪付手续费信息一般记录两条，分别为0-1000，1000-99999999的费率
+    struct quickPassFeesInfo{
+        0       require             int             qpBeginValue;           //区间开始数，如0
+        1       require             int             qpEndValue;             //区间结束数，如1000
+        2       require             float           qpFee;                  //费率，百分比
+    };
+
+    struct InProductPos{
+        0       require             string                          mechantNo;
+        1       require             vector<quickPassFeesInfo>       quickPassFees;      //云闪付费率记录
+        2       require             float                           feeRate;            //借记卡交易费率
+        3       require             float                           creFeeRate;         //信用卡交易费率
+        4       require             float                           upLimit;            //借记卡封顶手续费
+    };
+
+    struct inWxPublicApply{
+        0       require             string                          mechantNo;
+        1       require             vector<string>                  subscribeAppIds;    //关注公众号列表
+        2       require             vector<string>                  appIds;             //支付公众号列表
+        3       require             vector<string>                  authPayDirs;        //支付授权目录列表
+    };
+
+    struct inWxPublicApplyQuery{
+        0       require             string                          mechantNo;
+        1       require             vector<string>                  subscribeAppIds;    //关注公众号列表
+    };
+
+    //合同签章请求结构体
+    struct signContract{
+        0       require             string                          email;
+        1       require             string                          phone;
+        2       require             string                          legalPersonID;
+        3       require             string                          legalPerson;
+        4       require             string                          signName;
+        5       require             string                          address;
+        6       optional            string                          callBackUrl;
+    };
+
+    //合同签章返回结构体
+    struct outSignContract{
+        0       require             string                          body;                   //加密串
+        1       require             string                          merchantNo;             //子商户号
+        2       require             string                          sign;                   //签名
+        3       require             string                          interfaceName;          //接口
+        4       require             string                          url;                    //请求地址
+        5       optional            string                          callBackUrl;            //回调地址
+    };
+
+    struct modifyMerchantInfo{
+        0       optional            string                          merchantNo;
+        1       optional            string                          legalPersonID;          //法人身份证号
+        2       optional            string                          legalPerson;            //法人姓名
+        3       optional            string                          businessLicense;        //营业执照号
+        4       optional            string                          signName;               //签约名
+        5       optional            string                          idCardStartDate;        //身份证有效期开始
+        6       optional            string                          idCardEndDate;          //身份证有效期结束
+        7       optional            string                          busLiceStartDate;       //营业执照有效期开始
+        8       optional            string                          busLiceEndDate;         //营业执照有效期结束
+        9       optional            string                          regionCode;             //地区码
+        10      optional            string                          address;                //地址
+        11      optional            string                          mcc;                    //mcc码
+        12      optional            string                          showName;               //商户简称
+        13      optional            string                          servicePhone;           //客服电话
+        14      optional            string                          linkPhone;              //联系电话
+        15      optional            string                          linkman;                //联系人
+        16      optional            string                          merchantCategory;       //经营类别
+        17      optional            string                          microBizType;           //小微经营类型
+        18      optional            string                          certType;               //证书类型
+        19      optional            string                          linkManId;              //联系人证件号
+        //20    optional            string                          specialSignName;        //是否需要特殊处理商户名称
+        //21    optional            string                          synChannel;             //是否同步通道到修改
+        //22    optional            string                          appPayType;             //支付类型
+        //23    optional            string                          fileUrlMap;             //文件URL
+        //24    optional            string                          fileSigns;              //文件签名列表
+    };
+
+    struct queryAlteration {
+        0       require             string                          orderNo;                //变更订单号
+        1       require             string                          merchantNo;             //商户号
+        1       require             int                             type;                   //类型：0-结算卡：SETTLE_BANKCARD，1-商户信息：MERCHANT_INFO，2-资质：MERCHANT_CREDENTIAL
+    };
+
+    struct inPosOrder{
+         0      require             string                          customerNumb;
+         1      require             string                          orderId;
+    };
+
+    struct imgUrlStatus{
+        0       require             map<string,int>                 status;
+        1       require             string                          msg;
+    };
+
+    interface PayService
+    {
+        void unify(InUnify inParams,out Status status,out OutUnify outParams);                      //统一下单
+        void updateOrderAmount(string orderSn, int amount, out Status status);                      //修改订单金额,单位分
+
+
+        string integralWithdraw(string openid, int amount,out Status status);                       //微信商户余额提现到微信用户（积分提现） amount提现金额，单位分//todo
+        void overageWithdraw(InOverageWithdraw inParams,out Status status);                         //余额提现，单位分
+
+
+        //void updateMechant(InUpdateMechat inParams,out Status status);                            //支付商户修改
+        void mechantOverage(string merchantNo,out OutMechantOverage outParams,out Status status);   //合利宝查询商户余额,merchantNo子商户号
+
+
+        void orderPages(InOrderPage inParams, out OutOrderPage outParams);                          //支付数据
+        void orderInfo(int orderId,out PayInfo outParams);                                          //支付数据详情
+
+
+        void appPayWxSWIPE(InSWIPE inParams,out OutUnify outParams,out Status status);              //微信被扫接口（pos机）
+        void appPayAlipaySWIPE(InSWIPE inParams,out OutUnify outParams,out Status status);          //支付宝被扫接口
+
+
+        void appPayRefund(InRefund inParams,out Status status);                                     //支付退款接口
+        void appPayQuery(InPayQuery inParams,out Status status);                                    //支付订单查询
+        void posOrderQuery(inPosOrder inParam, out Status status);                                  //pos支付订单查询
+
+    };
+
+    interface MerchantService
+    {
+        void mchRegister(InMechantRegister inParams,out string registerId,out Status status);       //注册商户
+        void mchRegisterQuery(string registerId,out string mechantNo,out Status status);            //注册商户查询，CODE:INIT,待审核.OVERRULE,申请驳回.AUDITED,审核通过
+
+
+        void modifyMerchantInfo(modifyMerchantInfo inParam,out Status status);                      //重新提交商户资料
+        void queryAlteration(queryAlteration inParam,out Status status);                            //商户变更查询
+
+
+        void uploadImageUrl(inUploadImgUrl inParam, out Status status);                             //上传资质
+        void changeImageUrl(inUploadImgUrl inParam, out Status status);                             //资质变更
+        void imageUrlQuery(string mechantNo, out imgUrlStatus status);                              //资质查询
+
+
+        void openProductApppayWxpay(string mechantNo,out Status status);                            //开通产品-刷卡支付
+        void ProductApppayWxpayQuery(string mechantNo,out Status status);                           //查询产品开通-刷卡支付
+
+
+        void openProductApppayPublic(string mechantNo,out Status status);                           //开通产品-微信公众号支付
+        void ProductApppayPublicQuery(string mechantNo,out Status status);                          //查询产品开通-微信公众号支付
+
+
+        void openProductApppayAlipay(string mechantNo,out Status status);                           //开通产品-扫码支付
+        void ProductApppayAlipayQuery(string mechantNo,out Status status);                          //查询产品开通-扫码支付
+
+
+        void openProductPos(InProductPos inParams,out Status status);                               //开通产品-大POS
+        void ProductPosQuery(string mechantNo,out Status status);                                   //查询产品开通-大POS
+
+
+        void signContract(signContract inParam,out outSignContract outParam,out Status status);     //合同签章
+        void contractQuery(string mechantNo,out Status status);                                     //查询签名状态
+
+
+        void wxPublicApply(inWxPublicApply inParams,out Status status);                             //公众号进件，开通公众号支付前必须进件
+        void wxPublicApplyQuery(inWxPublicApplyQuery inParams,out Status status);                   //微信公众号进件查询接口
+
+
+        void appApply(string mechantNo,out Status status);                                          //app报备
+        void appApplyQuery(string mechantNo,out Status status);                                     //app报备查询
+
+
+        //设备操作
+        void deviceInputTerm(string termNo,out Status status);                                      //商户终端入库接口，termNo：设备号
+        void deviceTerminalBind(InDeviceTerminal inParams,out Status status);                       //商户终端绑定接口
+        void deviceTerminalOutBind(InDeviceTerminal inParams,out Status status);                    //商户终端解绑接口
+    };
+};

@@ -1,0 +1,91 @@
+//UserHttpService使用
+module UserService
+{
+    struct TokenPackage
+    {
+        0 require string jwtToken; // token值
+        1 require string expiredAt; // 过期时间
+        2 require string refreshAfter; // 刷新时间
+        3 require int userIsFormal; // 是否有完善个人信息
+    };
+
+//角色权限
+    struct RolePermission
+    {
+        0 require string role; //填写角色名称
+        1 require string path; //访问路径,可以是/:id形式
+        2 require string method; //GET,POST,DELETE,PUT
+        3 optional bool deny; //白名单0，黑名单1
+    };
+
+//用户角色描述
+    struct RoleForUser
+    {
+        0 require string role; //填写角色名称
+        1 require string uuid; //填写uuid，一般不留空
+        2 require int envDomainId; //必填
+        3 optional string tag; //权限标签，例如只针对店铺id为1设置的权限，可以令tag为"shop/1"
+    };
+
+//角色搜索
+    struct AuthUser
+    {
+        1 require string uuid; //填写uuid，一般不留空
+        2 require int envDomainId; //必填
+        3 optional string tag; //权限标签，例如只针对店铺id为1设置的权限，可以令tag为"shop/1"
+    };
+
+//访问参数
+    struct Access
+    {
+        0 require string uuid; //填写uuid，一般不留空
+        1 require int envDomainId; //必填
+        2 require string path; //访问路径，注意/:id和/*路径会匹配
+        3 require string method; //GET,POST,DELETE,PUT
+        4 optional string tag; //权限标签，例如只针对店铺id为1设置的权限，可以令tag为"shop/1"
+    };
+
+//分页
+    struct Pagination
+    {
+        0 require int page; //页数入参
+        1 require int perPage; //每页数量入参
+        2 optional int count; //总条数
+        3 optional int pageCount; //总页数
+    };
+
+    interface Token {
+        //微信授权后，获取用户uuid
+        int issueTokenToWechatUser(string userJsonData,string domain, out TokenPackage tokenPackage, out string error);
+        int getTokenUsingMobile(string mobile,int envDomainId, out TokenPackage tokenPackage, out string error);
+        int refreshToken(string jwtToken,out TokenPackage tokenPackage, out string error);
+    };
+
+    interface Auth
+    {
+          //增加角色权限（当角色名不存在时，会自动创建）
+          bool addRolePermission(RolePermission rp, out string errMsg);
+          //删除角色权限
+          bool delRolePermission(RolePermission rp, out string errMsg);
+          //删除角色
+          bool delRole(string role, out string errMsg);
+
+          //新角色继承旧角色的权限
+          bool addRoleForRole(string childRole, string parentRole, out string errMsg);
+          //去除新角色对旧角色的继承
+          bool delRoleFromRole(string childRole, string parentRole, out string errMsg);
+
+          //添加一个用户到指定角色
+          bool addRoleForUser(RoleForUser rfu, out string errMsg);
+          //删除用户的角色，（或者删除角色所继承的角色）
+          bool delRoleForUser(RoleForUser rfu, out string errMsg);
+          //验证用户是否具备访问权限
+          bool validateAccess(Access ac, out string errMsg);
+
+          //搜索用户在特定条件下具备的所有角色名称
+          bool searchRoles(AuthUser user, out vector<string> roles, out string errMsg);
+          //搜索具备特定角色的所有用户
+          bool searchUsers(string role, int envDomainId, string tag, Pagination pagination, out vector<string> uuids, out Pagination oPagination, out string errMsg);
+
+    };
+};

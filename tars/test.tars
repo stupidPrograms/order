@@ -1,0 +1,37 @@
+module OrderServant
+{
+    struct resultMsg {
+        0   require     string         code;            //返回码
+        1   optional    string      error;          //返回信息
+    };
+
+    struct InNotifyData {
+        0   require     string      ordersn;        //订单编号
+        1   require     int         paid;           //是否支付
+        2   require     int         paid_type;      //支付方式
+    };
+//  更新数据
+    struct InUpdateOrder {
+        0   require     int         id;             //订单id
+        1   optional    string      phone;          //手机号码
+        2   optional    int         status;         //支付方式：1微信支付，2莞银通支付，3易票联支付
+        3   optional    string      remark;         //订单备注
+        4   optional    string      express_code;   //快递单号
+        5   optional    int         amount;         //支付金额
+        6   optional    string      order_sn;       //订单号
+    };
+
+
+    //订单详情
+    struct ProductInfo{
+         1   require     int                     total;          //总数
+    };
+
+
+    interface Order
+    {
+        //更新订单
+        void updateOrder(InUpdateOrder InParams, out resultMsg OurParams);
+
+    };
+};

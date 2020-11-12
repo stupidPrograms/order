@@ -1,0 +1,92 @@
+module ShopService
+{
+       //获取店铺绑定的商户公众号
+       struct  outShopConfig{
+             0  optional  int        id;
+             1  optional  string    app_id;
+             2  optional  string    secret;
+             3  optional  string    mch_id;
+       };
+
+       // 店铺详情
+        struct ShopInfo{
+               0  optional  int      id;               //商家id
+               1  optional  string   thumb;            //商品主图
+               2  optional  string   name;             //商家名称
+               3  optional  string   type;             //1正式 2试用开店(体验）
+               4  optional  string   mobile;           //手机号码
+               5  optional  string   wechat;            //微信
+               6  optional  string   qq;                //qq
+               7  optional  string   uid;               //商家的uuid
+               8  optional  string   pid;               //上级店铺的id
+               9  optional  string   surname;           //商家真实名字
+               10  optional  string   istrial;          //1:未试用（正式版店铺）；2试用中（体验版）  3：已试用（有体验也有已正式版）
+               11 optional  string   industry_name;     //域名行业
+               12 optional  string   shoptype;          //店铺类型
+               13 optional  int      status;            //1:待审核,客户经理待确认; 2:已填写客户经理姓名;3:点击对接 4:审核成功 ;5:驳回审核失败;6:打烊
+               14 optional  int      version_type;      //1:邦邦/邦部落-专业版 2邦部落-试用  3邦部落-普通版
+         };
+
+        //获取支付商户信息
+        struct outMerchantInfo{
+            0  optional int    id;
+            1  optional int    store_id;
+            2  optional string uid;
+            3  optional string company;
+            4  optional string address;
+            5  optional string phone;
+            6  optional string email;
+            7  optional string license_num;
+            8  optional string license_img;
+            9  optional string province_id;
+            10 optional string city_id;
+            11 optional string district;
+            12 optional string industry_code;
+            13 optional string business_category;
+            14 optional string legal;
+            15 optional string legal_idCard;
+            16 optional string idCard_start;
+            17 optional string idCard_end;
+            18 optional string idCard_front;
+            19 optional string idCard_opposite;
+            20 optional string bank_code;
+            21 optional string status;
+            22 optional string bankname;
+            23 optional string bankcity;
+            24 optional string bankprovince;
+            25 optional string area_id;
+            26 optional string bank_sub_name;
+            27 optional string account_name;
+            28 optional string account_no;
+            29 optional string MCC_code;
+            30 optional string registerId;
+            31 optional string merchant_number;
+        };
+       //返回结果
+       struct resultMsg{
+            0  optional int     code;
+            1  optional string  msg;
+            2  optional string  data;
+       };
+
+
+
+
+      interface Shop
+      {
+          //店铺配置
+          void getShopConfig(int store_id,out resultMsg data,out outShopConfig ShopConfig);
+
+          //通过uuid判断店铺是否存在
+          void shopExis(string uuid,out resultMsg data);
+
+          //店铺详情
+          void shopInfo(int id,out resultMsg data,out ShopInfo info);
+
+         //获取商户信息
+          void getMerchantInfo(int store_id,out resultMsg data,out outMerchantInfo Merchant);
+
+          //通过父级的id获取全部子店铺
+          void getSubShop(int pid,out resultMsg data,out vector<int> outGetArrayId);
+      };
+};

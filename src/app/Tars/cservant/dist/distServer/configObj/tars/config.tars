@@ -1,0 +1,57 @@
+module ConfigServiceServant
+{
+    //修改请求参数
+    struct QueryParam {
+        0 require string topTitle;  //等级名称
+        1 require string topRate;      //分销佣金比例
+        2 require string topNextRate;  //下级分销佣金比例
+        3 require string secondTitle; //等级名称
+        4 require string secondRate; //分销佣金比例
+        5 require string secondNextRate; //下级分销佣金比例
+        6 optional string advanceValue;  //晋级条件值
+        7 require int type; //晋级条件
+    };
+
+    //修改自动审核参数
+    struct PendingParam {
+        0 require string top_rate;         //一级分销员比例
+        1 require string top_next_rate;    //一级分销员下级比例
+        2 require string second_rate;      //二级分销员比例
+        3 require string second_next_rate; //二级分销员下级比例
+    };
+
+    //通用入参结构体
+    struct CommonInParam {
+        0 require string businessId; //登录商家id
+        1 require int domainId;    //域名id
+        2 require int storeId;    //店铺id
+    };
+
+    //等级设置
+    struct Level {
+        0 require int level;    //等级，1一级分销员，2二级分销员
+        1 require string title; //等级名称
+        2 require string rate;     //当前分销比例
+        3 require string nextRate; //下级分销比例
+        4 optional int advanceValue; //条件值
+    };
+
+    //输出参数通用结构体
+    struct CommonOutParam {
+        0 require int code;  //接口返回码
+        1 require string message;  //接口返回提示信息
+    };
+
+    interface ConfigService
+    {
+        void getLevel(CommonInParam inParam, out vector<Level> data, out CommonOutParam outParam, out int type);    //获取分销等级设置
+
+        void updateConfig(CommonInParam inParam, QueryParam param, out CommonOutParam outParam);  //修改默认分销比例
+
+        void changeStatus(CommonInParam param, int status, out CommonOutParam outParam);    //开关分销功能
+
+        void getStatus(CommonInParam param, out CommonOutParam outParam, out int status);   //获取分销状态
+
+        void updatePendingConfig(CommonInParam inParam, PendingParam param, out CommonOutParam outParam);   //修改自动审核配置
+    };
+};

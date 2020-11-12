@@ -1,0 +1,12 @@
+module AuthenticationServiceServant
+{
+    interface AuthenticationService
+    {
+        //在网关服务中配置启用jwt,默认开启jwt的token超时设置属性;返回201代表成功,否则失败
+        int api_jwt(string service_name);
+		
+        //在网关中一键给用户生成jwt的token,其中consumer_name可以填写用户的UUID,exp_time是设置jwt的token的超时时间(按秒算,例如当前时间开始2小时后超时应设置为7200);返回201代表成功(同时输出jwt_token的值),否则失败
+        int api_automake_jwt_token(string consumer_name, int exp_time, out string jwt_token);
+
+    };
+};

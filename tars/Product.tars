@@ -1,0 +1,95 @@
+module ProductService
+{
+    // 商品详情
+    struct ProductInfo{
+        0  optional  int       id;               //商品id
+        1  optional  string    thumb;            //商品主图
+        2  optional  string    name;             //商品名称
+        3  optional  string    price;            //商品价格
+        4  optional  int       stock;            //商品库存
+        5  optional  string    describe;         //商品描述
+        6  optional  string    unit;             //商品单位
+        7  optional   int      code;
+        8  optional  string    message;
+        9  optional  string    store_id;        //店铺id
+        10 optional  string    p_name;          //店铺名称
+        11 optional  string    product_types;   //商品类型
+        12 optional  string    details;        //商品详情
+        13 optional  string    created_at;     //创建时间
+        14 optional  string    updated_at;     //产品更新时间
+    };
+    //商品列表出参
+    struct ProductList{
+        0 optional  vector<ProductInfo> item;  //商品列表
+        1 optional  int  total;                  //总数据
+        2 require   int  code;
+        3 optional  string  message;
+    };
+   //商品列表入参
+    struct PageParam{
+         0 optional   int     page;           //页数
+         1 optional   int     pageSize;       //每页数据量
+         2 optional   string  idArray;        //产品id'1,2,3'
+         3 optional   string  search;         //搜索的关键字
+         4 optional   int     shop_id;        //商家id
+    };
+    //属性信息
+    struct AttrInfo{
+         0 optional   int        product_id;    //产品id
+         1 optional   string     price;         //产品的价格
+         2 optional   string     cost;          //成本价
+         3 optional   string     stock;         //属性对应的库存
+         4 optional   string     name;          //规格组装的名称
+         5 optional   string     weight;        //商品的重量
+         6 optional   string     image;         //图片
+         7 require    int        code;          //状态
+         8 optional   string     message;       //参数说明
+    };
+    //属性更新数量
+    struct UpdateData{
+       0  require   int       id;             //产品的id
+       1  require   int       num;            //更新的数量
+       2  optional  int       attr_id;       //属性的id
+       3  optional  string    order_id;       //订单号
+       4  optional  int       type;          //0:库存减少；1库存添加
+       5  optional  string    remarks;      //备注信息
+    };
+    //产品规格属性的改变出参
+    struct StatusCode{
+         0 require   int     code;
+         1 optional  string  message;
+         2 optional  string  data;
+    };
+    //状态
+    struct resultMsg{
+        0  optional int     code;
+        1  optional string  msg;
+        2  optional string  data;
+     };
+     //传入商品数组
+     struct paramList{
+          0 optional   int     page;           //页数
+          1 optional   int     pageSize;       //每页数据量
+          2 optional   vector<int> outGetArrayId;
+          3 optional   string idArray;        //产品id'1,2,3'
+          4 optional   string  search;
+      };
+
+    interface Product
+    {
+        //产品列表
+        void productlist(PageParam Param ,out ProductList List);
+        //产品详情
+        void productdata(int id,out ProductInfo info);
+        //属性详情
+        void attribute(int id,out AttrInfo Info);
+        //添加改变属性的库存信息
+        void updateStock(UpdateData Param,out StatusCode CodeData);
+        //统计某个店铺的全部商品的数量
+        void getShopNum(int store_id,out resultMsg data);
+        //通过数组产品数组获取产品列表
+        void getProductList(paramList param,out resultMsg data,out ProductList List);
+    };
+
+
+};

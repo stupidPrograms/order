@@ -1,0 +1,12 @@
+module LoggingServiceServant
+{
+    interface LoggingService
+    {
+        //网关文件日志输出接口,config_path:文件日志输出路径,如/tmp/file.log;返回201代表成功,否则失败   
+        int api_file_log(string service_name, string config_path);
+
+        //网关系统日志输出接口,tail -f /var/log/messages;返回201代表成功,否则失败   
+        int api_syslog(string service_name);
+
+    };
+};

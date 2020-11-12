@@ -1,0 +1,137 @@
+module CommodityServiceServant
+{
+    //通用入参结构体
+    struct CommonInParam {
+        0 require string businessId; //登录商家id
+        1 require int domainId;    //域名id
+        2 require int storeId;    //店铺id
+    };
+
+    //商品上下架
+    struct ChangeStatusParam {
+        0 require int commodityId; //商品id
+        1 require int status;   //状态，0下架（关闭分销），1上架（开启分销）
+    };
+
+    //修改商品佣金参数
+    struct UpdateParam {
+        0 require int type;             //比例类型,0:默认,1:自定义
+        1 require string topRate;          //一级分销佣金
+        2 require string topNextRate;      //一级分销员下级佣金
+        3 require string secondRate;       //二级分销佣金
+        4 require string secondNextRate;   //二级分销员下级佣金
+        5 require vector<int> commodityId;      //商品id
+    };
+
+    //审核商品佣金参数
+    struct PendingParam {
+        0 require vector<int> commodity_id;
+        1 require int status;
+    };
+
+    //查询返回
+    struct Config {
+        0 require string rate;     //默认分销佣金
+        1 require string nextRate; //默认分销下级佣金
+        2 require int level;     //分销等级,1:一级,2:二级
+    };
+
+    //获取商品分销列表
+    struct Commodity {
+        0 require int commodity_id; //商品id
+        1 require string cover;     //封面图
+        2 require string title;     //标题
+        3 require string price;     //价格
+        4 require int stoke;        //库存
+        5 require int total;        //分销数量
+        6 require int status;       //是否分销，0否，1是
+        7 require vector<Config> rate;    //分销佣金比例
+        8 optional int pending_status;  //审核状态，0待审核，1审核通过，2审核拒绝
+    };
+
+    //获取审核分销商品列表
+    struct PendingCommodity {
+        0 require int commodity_id; //商品id
+        1 require string cover;     //封面图
+        2 require string title;     //标题
+        3 require string price;     //价格
+        4 require string created_at;    //提交时间
+        5 require vector<Config> rate;    //分销佣金比例
+        6 require string shop_name;        //店铺名称
+        7 require int pending_status;   //审核状态
+    };
+
+    //分销商品列表
+    struct Page {
+        0 require vector<Commodity> list;   //列表数据
+        1 require int page;     //当前页数
+        2 require int total;    //总记录数
+    };
+
+    //审核分销商品列表
+    struct PendingPage {
+        0 require vector<PendingCommodity> list;
+        1 require int page;
+        2 require int total;
+    };
+
+    //分销列表参数
+    struct QueryParam {
+        0 optional int page;     //页数
+        1 optional int pageSize; //每页数据量
+        2 optional string title; //商品标题
+        3 optional string sort;     //排序，desc和asc
+        4 optional int status;   //商品状态，0全部，2下架（关闭分销），1上架（开启分销）
+    };
+
+    //审核分销列表参数
+    struct PendingQueryParam {
+        0 optional int page;            //页数
+        1 optional int pageSize;        //每页数据量
+        2 optional string commodityName;//商品名称
+        3 optional string shopName;     //店铺名称
+        4 optional string startAt;      //开始时间
+        5 optional string endAt;        //结束时间
+    };
+
+    //dist good 同步商品接口
+    struct SynchronizeParam {
+        0 require int goodId;   //商品id
+        1 require int domainId; //主域id
+        2 require string businessId;    //商家id
+        3 require int storeId;    //店铺id
+    };
+
+    //商品佣金设置
+    struct Rate {
+        0 require int type;
+        1 require vector<Config> data;
+    };
+
+    //输出参数通用结构体
+    struct CommonOutParam {
+        0 require int code;  //接口返回码
+        1 require string message;  //接口返回提示信息
+    };
+
+    interface CommodityService
+    {
+        void updateCommodity(CommonInParam inParam, UpdateParam param, out CommonOutParam outParam);        //修改商品
+
+        void updatePending(CommonInParam inParam, UpdateParam param, out CommonOutParam outParam);    //修改佣金审核
+
+        void pending(CommonInParam inParam, PendingParam param, out CommonOutParam outParam);    //审核商家佣金设置
+
+        void getPending(CommonInParam inParam, PendingQueryParam param, out CommonOutParam outParam, out PendingPage list);
+
+        void getDefaultRate(CommonInParam inParam, out CommonOutParam outParam, out vector<Config> list);   //获取商家默认分销佣金
+
+        void updateStatus(CommonInParam inParam, ChangeStatusParam param, out CommonOutParam outParam);     //商品上下架（开关分销）
+
+        void getCommodity(CommonInParam inParam, QueryParam param, out CommonOutParam outParam, out Page list);    //商品列表
+
+        void updateDistGood(SynchronizeParam param, out CommonOutParam outParam);    //同步商品
+
+        void getRate(CommonInParam inParam, int commodityId, out CommonOutParam outParam, out Rate data);   //获取商品佣金设置
+    };
+};
